@@ -2,9 +2,8 @@ import praw
 import json
 import time
 import re
-import dotenv
 import os
-from datetime import datetime
+from dotenv import load_dotenv
 from typing import List, Dict
 
 class BrainrotScraper:
@@ -25,7 +24,7 @@ class BrainrotScraper:
         
         # Target subreddits
         self.target_subreddits = [
-            "GenZ", "teenagers", "memes", "TikTokCringe", 
+            "GenZ", "teenagers  ", "memes", "TikTokCringe", 
             "gaming", "Minecraft", "dankmemes", "shitposting"
         ]
         
@@ -52,39 +51,34 @@ class BrainrotScraper:
         try:
             subreddit = self.reddit.subreddit(subreddit_name)
             
+            print(f"  Fetching {limit} posts from r/{subreddit_name}...")
+            submissions = list(subreddit.hot(limit=limit))
+            
             # Get hot posts
-            for submission in subreddit.hot(limit=limit):
+            for i, submission in enumerate(submissions, 1):
+                print(f"  Processing post {i}/{len(submissions)} in r/{subreddit_name} (Found: {len(self.collected_data)} entries)", end='\r')
+                
                 # Check title
                 title_terms = self.contains_brainrot_terms(submission.title)
                 if title_terms:
-                    self.add_data_entry(
-                        content=submission.title,
-                        source="title",
-                        subreddit=subreddit_name,
-                        terms_found=title_terms,
-                        post_id=submission.id
-                    )
+                    self.add_data_entry(submission.title)
                 
                 # Check selftext (for text posts)
                 if submission.selftext:
                     selftext_terms = self.contains_brainrot_terms(submission.selftext)
                     if selftext_terms:
-                        self.add_data_entry(
-                            content=submission.selftext,
-                            source="selftext",
-                            subreddit=subreddit_name,
-                            terms_found=selftext_terms,
-                            post_id=submission.id
-                        )
+                        self.add_data_entry(submission.selftext)
                 
                 # Scrape comments
                 self.scrape_comments(submission, subreddit_name)
                 
                 # Rate limiting
-                time.sleep(1)
+                #time.sleep(1)
+            
+            print(f"\n  Completed r/{subreddit_name}: {len(self.collected_data)} total entries found")
                 
         except Exception as e:
-            print(f"Error scraping subreddit {subreddit_name}: {e}")
+            print(f"\n  Error scraping subreddit {subreddit_name}: {e}")
     
     def scrape_comments(self, submission, subreddit_name: str, max_comments: int = 20):
         """Scrape comments from a submission"""
@@ -96,143 +90,136 @@ class BrainrotScraper:
                 if hasattr(comment, 'body') and comment.body:
                     comment_terms = self.contains_brainrot_terms(comment.body)
                     if comment_terms:
-                        self.add_data_entry(
-                            content=comment.body,
-                            source="comment",
-                            subreddit=subreddit_name,
-                            terms_found=comment_terms,
-                            post_id=submission.id,
-                            comment_id=comment.id
-                        )
+                        self.add_data_entry(comment.body)
         except Exception as e:
             print(f"Error scraping comments: {e}")
     
-    def add_data_entry(self, content: str, source: str, subreddit: str, 
-                      terms_found: List[str], post_id: str, comment_id: str = None):
+    def add_data_entry(self, content: str):
         """Add a data entry to the collection"""
         entry = {
             "brainrot": content.strip(),
-            "English": "",  # Intentionally left blank as requested
-            "metadata": {
-                "source": source,
-                "subreddit": subreddit,
-                "terms_found": terms_found,
-                "post_id": post_id,
-                "comment_id": comment_id,
-                "timestamp": datetime.now().isoformat()
-            }
+            "English": ""  # Intentionally left blank as requested
         }
         self.collected_data.append(entry)
     
     def search_by_terms(self, limit_per_term: int = 20):
         """Search Reddit globally for specific brainrot terms"""
-        for term in self.brainrot_terms:
+        total_terms = len(self.brainrot_terms)
+        
+        for term_index, term in enumerate(self.brainrot_terms, 1):
             try:
-                print(f"Searching for term: {term}")
+                print(f"\nSearching for term: '{term}' ({term_index}/{total_terms})")
+                initial_count = len(self.collected_data)
                 
                 # Search across all of Reddit
-                for submission in self.reddit.subreddit("all").search(term, limit=limit_per_term):
+                submissions = list(self.reddit.subreddit("all").search(term, limit=limit_per_term))
+                
+                for i, submission in enumerate(submissions, 1):
+                    print(f"  Processing search result {i}/{len(submissions)} for '{term}' (Found: {len(self.collected_data)} total)", end='\r')
+                    
                     # Check title
                     if self.contains_brainrot_terms(submission.title):
-                        self.add_data_entry(
-                            content=submission.title,
-                            source="search_title",
-                            subreddit=submission.subreddit.display_name,
-                            terms_found=[term],
-                            post_id=submission.id
-                        )
+                        self.add_data_entry(submission.title)
                     
                     # Check comments (limited)
                     try:
                         submission.comments.replace_more(limit=0)
                         for comment in submission.comments.list()[:5]:
                             if hasattr(comment, 'body') and self.contains_brainrot_terms(comment.body):
-                                self.add_data_entry(
-                                    content=comment.body,
-                                    source="search_comment",
-                                    subreddit=submission.subreddit.display_name,
-                                    terms_found=[term],
-                                    post_id=submission.id,
-                                    comment_id=comment.id
-                                )
+                                self.add_data_entry(comment.body)
                     except:
                         pass
                 
-                # Rate limiting
-                time.sleep(2)
+                new_entries = len(self.collected_data) - initial_count
+                print(f"\n  Completed '{term}': +{new_entries} new entries ({len(self.collected_data)} total)")
                 
             except Exception as e:
-                print(f"Error searching for term {term}: {e}")
+                print(f"\n  Error searching for term {term}: {e}")
     
     def save_to_json(self, filename: str = "brainrot_data.json"):
         """Save collected data to JSON file in the specified format"""
-        # Create the final format - array of objects with brainrot and English fields
-        output_data = []
-        
-        for entry in self.collected_data:
-            formatted_entry = {
-                "brainrot": entry["brainrot"],
-                "English": entry["English"]
-            }
-            output_data.append(formatted_entry)
-        
-        # Save with metadata file as well
+        # Save the clean format directly since we already have the right structure
         with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(output_data, f, indent=2, ensure_ascii=False)
-        
-        # Save full data with metadata to separate file
-        metadata_filename = filename.replace('.json', '_with_metadata.json')
-        with open(metadata_filename, 'w', encoding='utf-8') as f:
             json.dump(self.collected_data, f, indent=2, ensure_ascii=False)
         
-        print(f"Saved {len(output_data)} entries to {filename}")
-        print(f"Saved full data with metadata to {metadata_filename}")
+        print(f"Saved {len(self.collected_data)} entries to {filename}")
     
     def run_scraper(self, posts_per_subreddit: int = 30, search_limit: int = 15):
         """Main scraping function"""
+        start_time = time.time()
         print("Starting Reddit brainrot scraper...")
+        print(f"Target: {len(self.target_subreddits)} subreddits, {len(self.brainrot_terms)} search terms")
+        print("=" * 60)
         
         # Scrape target subreddits
-        for subreddit in self.target_subreddits:
-            print(f"Scraping r/{subreddit}...")
+        print(f"\nPhase 1: Scraping {len(self.target_subreddits)} target subreddits")
+        for i, subreddit in enumerate(self.target_subreddits, 1):
+            print(f"\n[{i}/{len(self.target_subreddits)}] Scraping r/{subreddit}...")
+            initial_count = len(self.collected_data)
             self.scrape_submissions(subreddit, posts_per_subreddit)
-            time.sleep(2)  # Be nice to Reddit's servers
+            new_entries = len(self.collected_data) - initial_count
+            print(f"  Completed r/{subreddit}: +{new_entries} entries")
+        
+        print(f"\nPhase 1 complete: {len(self.collected_data)} entries from subreddits")
         
         # Search by specific terms
-        print("Searching by brainrot terms...")
+        print(f"\nPhase 2: Searching by brainrot terms")
+        initial_search_count = len(self.collected_data)
         self.search_by_terms(search_limit)
+        search_entries = len(self.collected_data) - initial_search_count
+        print(f"\nPhase 2 complete: +{search_entries} entries from term searches")
         
         # Remove duplicates based on content
+        print(f"\nPhase 3: Cleaning data...")
+        before_dedup = len(self.collected_data)
         self.remove_duplicates()
+        removed_dupes = before_dedup - len(self.collected_data)
+        print(f"Removed {removed_dupes} duplicates")
         
         # Save results
+        print(f"\nPhase 4: Saving results...")
         self.save_to_json()
         
-        print(f"Scraping complete! Collected {len(self.collected_data)} unique entries.")
+        # Summary
+        elapsed_time = time.time() - start_time
+        print("\n" + "=" * 60)
+        print(f"Scraping complete!")
+        print(f"Final count: {len(self.collected_data)} unique brainrot entries")
+        print(f"Total time: {elapsed_time:.1f} seconds")
+        print(f"File saved: brainrot_data.json")
+        print("=" * 60)
     
     def remove_duplicates(self):
         """Remove duplicate entries based on content"""
         seen_content = set()
         unique_data = []
         
-        for entry in self.collected_data:
+        total_entries = len(self.collected_data)
+        for i, entry in enumerate(self.collected_data, 1):
+            print(f"  Checking for duplicates: {i}/{total_entries}", end='\r')
+            
             content_hash = entry["brainrot"].lower().strip()
             if content_hash not in seen_content and len(content_hash) > 10:  # Filter out very short entries
                 seen_content.add(content_hash)
                 unique_data.append(entry)
         
         self.collected_data = unique_data
-        print(f"Removed duplicates, {len(self.collected_data)} unique entries remaining")
+        print(f"  Deduplication complete: {len(self.collected_data)} unique entries remaining" + " " * 20)
 
+# Usage example
 if __name__ == "__main__":
     # Load environment variables from .env file
-    dotenv.load_dotenv()
+    load_dotenv()
 
     CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
+    if not CLIENT_ID:
+        raise ValueError("REDDIT_CLIENT_ID environment variable not set")
     CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET")
-    if not CLIENT_ID or not CLIENT_SECRET:
-        raise ValueError("Please set the REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET environment variables.")
-    USER_AGENT = "Goblinator"
+    if not CLIENT_SECRET:
+        raise ValueError("REDDIT_CLIENT_SECRET environment variable not set")
+    USER_AGENT = os.getenv("REDDIT_USER_AGENT")
+    if not USER_AGENT:
+        raise ValueError("REDDIT_USER_AGENT environment variable not set")
     
     # Initialize and run scraper
     scraper = BrainrotScraper(CLIENT_ID, CLIENT_SECRET, USER_AGENT)
