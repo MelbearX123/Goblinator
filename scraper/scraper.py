@@ -19,13 +19,23 @@ class BrainrotScraper:
         self.brainrot_terms = [
             "skibidi", "sigma", "rizz", "gyatt", "ohio", "fanum tax", 
             "bussin", "cap", "sus", "no cap", "bet", "fr fr", "periodt",
-            "slay", "based", "cringe", "mid", "W", "L", "ratio"
+            "slay", "based", "cringe", "mid", "W", "L", "ratio", "amongus", 
+            "morbin", "thug shaker", "grimace", "baby gronk", "oklahoma", "ong",
+            "bomboclat", "grimace", "icl", "sybau", "pmo", "ts pmo", "cook",
+            "cooked", "alpha", "looksmaxxing", "looksmax", "chopped"
         ]
         
         # Target subreddits
         self.target_subreddits = [
             "GenZ", "teenagers  ", "memes", "TikTokCringe", 
-            "gaming", "Minecraft", "dankmemes", "shitposting"
+            "gaming", "Minecraft", "dankmemes", "shitposting", "copypasta", 
+            "okbuddyretard", "okbuddybaka", "comedyheaven", "2meirl4meirl", 
+            "wooosh", "im14andthisisdeep", "greentext", "GoCommitDie", 
+            "funnyandhewashot", "youngpeopleyoutube", "MemeEconomy",
+            "ComedyCemetery", "LooksmaxingAdvice", "skibiditoilet", "cringe", 
+            "stupidquestions", "amogus", "brainrot", "Brainrotcontent", "GenAlpha", 
+            "highschool", "uwaterloo", "OntarioGrade12s", "sadcringe", "CringeTikToks",
+            "Looksmaxx", "KidsAreFuckingStupid", "youngpeopleyoutube", "21stCenturyHumour"
         ]
         
         self.collected_data = []
