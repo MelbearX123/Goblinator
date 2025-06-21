@@ -1,7 +1,17 @@
 import praw
+import os
+from dotenv import load_dotenv
 
-reddit = praw.Reddit(
-    client_id="pR6A_GznfbIEMcz4nGwEYA",
-    client_secret="LBiy1Ov0DRHjUWfNpWz7JxzrZDWMxw",
-    user_agent="Goblinator",
-)
+load_dotenv()
+
+
+def get_authenticated_reddit_instance():
+    """
+    Authenticate with Reddit using PRAW and return an authenticated Reddit instance.
+    """
+    reddit = praw.Reddit(
+        client_id=os.getenv("REDDIT_CLIENT_ID"),
+        client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
+        user_agent=os.getenv("REDDIT_USER_AGENT"),
+    )
+    return reddit
