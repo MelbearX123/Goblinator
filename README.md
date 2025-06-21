@@ -1,0 +1,2 @@
+# Goblinator
+GOBLIN MODE ACTIVATED
