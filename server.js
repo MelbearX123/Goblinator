@@ -36,7 +36,7 @@ app.post('/api/translate', async (req, res) => {
         { role: "system", content: systemMessage },
         { role: "user", content: text }
       ],
-      model: "ft:gpt-4o-mini-2024-07-18:personal:brainrot-translate:Bl8MOsFc",
+      model: "ft:gpt-4.1-nano-2025-04-14:personal:brainrot-translate:Bl8MOsFc",
       temperature: 0,
       max_tokens: 150,
       store: false,
