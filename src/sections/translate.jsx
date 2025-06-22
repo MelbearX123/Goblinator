@@ -64,7 +64,7 @@ export default function Translate(){
       
       <div className="flex gap-4 mb-6 items-center">
         <button 
-          className="text-2xl text-white font-semibold px-4 py-2 scale-135 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:cursor-pointer transform hover:opacity-65 transform active:scale-125 bg-[#FF6B6B] transform active:opacity-90 rounded-lg shadow opacity-50"
+          className="text-2xl text-white font-semibold px-4 py-2 scale-135 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:cursor-pointer transform hover:opacity-70 transform active:scale-125 bg-[#FF6B6B] transform active:opacity-50 rounded-lg shadow opacity-90"
           onClick={handleTranslate}
           disabled={isLoading || !inputText.trim()}
         >
