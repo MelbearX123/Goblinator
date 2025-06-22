@@ -29,13 +29,14 @@ class BrainrotScraper:
         self.target_subreddits = [
             "GenZ", "teenagers  ", "memes", "TikTokCringe", 
             "gaming", "Minecraft", "dankmemes", "shitposting", "copypasta", 
-            "okbuddyretard", "okbuddybaka", "comedyheaven", "2meirl4meirl", 
-            "wooosh", "im14andthisisdeep", "greentext", "GoCommitDie", 
-            "funnyandhewashot", "youngpeopleyoutube", "MemeEconomy",
-            "ComedyCemetery", "LooksmaxingAdvice", "skibiditoilet", "cringe", 
-            "stupidquestions", "amogus", "brainrot", "Brainrotcontent", "GenAlpha", 
-            "highschool", "uwaterloo", "OntarioGrade12s", "sadcringe", "CringeTikToks",
-            "Looksmaxx", "KidsAreFuckingStupid", "youngpeopleyoutube", "21stCenturyHumour"
+            "okbuddyretard"
+            # , "okbuddybaka", "comedyheaven", "2meirl4meirl", 
+            # "wooosh", "im14andthisisdeep", "greentext", "GoCommitDie", 
+            # "funnyandhewashot", "youngpeopleyoutube", "MemeEconomy",
+            # "ComedyCemetery", "LooksmaxingAdvice", "skibiditoilet", "cringe", 
+            # "stupidquestions", "amogus", "brainrot", "Brainrotcontent", "GenAlpha", 
+            # "highschool", "uwaterloo", "OntarioGrade12s", "sadcringe", "CringeTikToks",
+            # "Looksmaxx", "KidsAreFuckingStupid", "youngpeopleyoutube", "21stCenturyHumour"
         ]
         
         self.collected_data = []
@@ -233,4 +234,4 @@ if __name__ == "__main__":
     
     # Initialize and run scraper
     scraper = BrainrotScraper(CLIENT_ID, CLIENT_SECRET, USER_AGENT)
-    scraper.run_scraper(posts_per_subreddit=25, search_limit=10)
+    scraper.run_scraper(posts_per_subreddit=400, search_limit=10)

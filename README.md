@@ -1,12 +1,29 @@
-# React + Vite
+# Goblinator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Getting Started
+Please see the [Requirements](#Requirements) section for the requirements installation, which should be installed before using this project for local deployments. For remote usage, visit [Hyperlink Here](!google.com)
 
-Currently, two official plugins are available:
+## Requirements
+Notice that the following requirements are only necessary for local deployment, training, fetching, etc.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+For the web scraper for collecting data:
+- Use, primarily, the scraper directory. A Reddit account, client ID, client secret, and user agent are necessary - obtain them at the [Reddit developer portal](!https://www.reddit.com/prefs/apps).
+- Ensure you have Python 3.12.8 or higher.
+- Ensure you have installed requirements.txt.
 
-## Expanding the ESLint configuration
+You can perform the latter two steps using the commands:
+```powershell
+# Check your Python version
+python -V
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Install requirements
+pip install -r requirements.txt
+```
+
+## User Guide
+Enter the text to be translated on the left. The translation result will appear on the right momentarily.
+
+Press the double arrows to switch languages.
+
+
+## Developer Guide
