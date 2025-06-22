@@ -22,7 +22,7 @@ export default function Translate(){
   setIsLoading(true);
   try {
     const API_URL = process.env.NODE_ENV === 'production' 
-      ? 'https://translator-api.vercel.app'
+      ? 'https://translator-api-dusky.vercel.app'
       : 'http://localhost:3001';
 
     
