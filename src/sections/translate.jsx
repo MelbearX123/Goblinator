@@ -1,36 +1,75 @@
 import { useState } from "react";
 import Textbox from "../components/textbox";
 
-const LANGUAGES = ["English", "Brainrot"];
-
-
 export default function Translate(){
   const [inputText, setInputText] = useState("");
+  const [translatedText, setTranslatedText] = useState("");
   const [fromLang, setFromLang] = useState("English");
   const [toLang, setToLang] = useState("Brainrot");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const swapLanguages =()=> {
+  const swapLanguages = () => {
     const temp = fromLang;
     setFromLang(toLang);
     setToLang(temp);
+    // Clear translations when swapping
+    setTranslatedText("");
   };
 
-  
+  const handleTranslate = async () => {
+    if (!inputText.trim()) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch('http://localhost:3001/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: inputText,
+          fromLang,
+          toLang
+        }),
+      });
+      
+      const data = await response.json();
+      setTranslatedText(data.translation);
+    } catch (error) {
+      console.error('Translation error:', error);
+      setTranslatedText('Translation failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return(
     <main className="flex flex-col items-center py-32 bg-[#1e1e1e]">
       <div className="flex gap-4 items-center mb-6">
-        <p className="px-4 py-2 rounded-lg min-w-[90px] text-center bg-[#000000] shadow border-1 border-[#FF6B6B]">{fromLang}</p>
-        <button className="text-2xl text-white copx-2 border-none focus:outline-none transition-transform duration-50 ease-in-out transform hover:scale-135 active:scale-115" onClick={swapLanguages}>
+        <p className="px-4 py-2 rounded-lg min-w-[90px] text-center bg-[#000000] shadow border border-[#FF6B6B]">{fromLang}</p>
+        <button 
+          className="text-2xl text-white px-2 border-none focus:outline-none transition-transform duration-50 ease-in-out transform hover:scale-135 active:scale-115" 
+          onClick={swapLanguages}
+        >
           ⇄
         </button>
-        <a className="px-4 py-2 rounded-lg min-w-[90px] text-center bg-[#000000] border-1 border-[#FF6B6B] shadow">{toLang}</a>
+        <p className="px-4 py-2 rounded-lg min-w-[90px] text-center bg-[#000000] border border-[#FF6B6B] shadow">{toLang}</p>
       </div>
       
-      <Textbox inputText={inputText} setInputText={setInputText} />
+      <Textbox 
+        inputText={inputText} 
+        setInputText={setInputText}
+        translatedText={translatedText}
+      />
+      
       <div className="flex gap-4 mb-6 items-center">
-        <button className="text-2xxl text-white copx-2 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:scale-125 active:scale-115 bg-[#FF6B6B] px-4 py-2 rounded-lg shadow" onClick={() => setInputText("")}>
-          Translate
-      </button>
+        <button 
+          className="text-2xl text-white px-4 py-2 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:scale-125 active:scale-115 bg-[#FF6B6B] rounded-lg shadow disabled:opacity-50"
+          onClick={handleTranslate}
+          disabled={isLoading || !inputText.trim()}
+        >
+          {isLoading ? 'Translating...' : 'Translate'}
+        </button>
       </div>
     </main>
   );

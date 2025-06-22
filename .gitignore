@@ -25,3 +25,4 @@ dist-ssr
 
 # Env
 scraper/.env
+.env
