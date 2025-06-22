@@ -21,7 +21,12 @@ export default function Translate(){
     
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/translate', {
+      const API_URL = process.env.NODE_ENV === 'production' 
+        ? 'https://your-api-domain.vercel.app'
+        : 'http://localhost:3001';
+
+      
+      const response = await fetch(`${API_URL}/api/translate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
