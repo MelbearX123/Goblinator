@@ -15,6 +15,7 @@ export default function Translate(){
     setToLang(temp);
   };
 
+  
   return(
     <main className="flex flex-col items-center py-32 bg-[#1e1e1e]">
       <div className="flex gap-4 items-center mb-6">
@@ -26,6 +27,11 @@ export default function Translate(){
       </div>
       
       <Textbox inputText={inputText} setInputText={setInputText} />
+      <div className="flex gap-4 mb-6 items-center">
+        <button className="text-2xxl text-white copx-2 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:scale-125 active:scale-115 bg-[#FF6B6B] px-4 py-2 rounded-lg shadow" onClick={() => setInputText("")}>
+          Translate
+      </button>
+      </div>
     </main>
   );
 }
