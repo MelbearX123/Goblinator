@@ -4,8 +4,8 @@ import Textbox from "../components/textbox";
 export default function Translate(){
   const [inputText, setInputText] = useState("");
   const [translatedText, setTranslatedText] = useState("");
-  const [fromLang, setFromLang] = useState("English");
-  const [toLang, setToLang] = useState("Brainrot");
+  const [fromLang, setFromLang] = useState("Brainrot");
+  const [toLang, setToLang] = useState("English");
   const [isLoading, setIsLoading] = useState(false);
 
   const swapLanguages = () => {
@@ -48,7 +48,7 @@ export default function Translate(){
       <div className="flex gap-4 items-center mb-6">
         <p className="px-4 py-2 rounded-lg min-w-[90px] text-center bg-[#000000] shadow border border-[#FF6B6B]">{fromLang}</p>
         <button 
-          className="text-2xl text-white px-2 border-none focus:outline-none transition-transform duration-50 ease-in-out transform hover:scale-135 active:scale-115" 
+          className="text-2xl text-white px-2 border-none focus:outline-none transition-transform duration-50 ease-in-out transform hover:cursor-pointer transform hover:scale-135 active:scale-115" 
           onClick={swapLanguages}
         >
           ⇄
@@ -64,7 +64,7 @@ export default function Translate(){
       
       <div className="flex gap-4 mb-6 items-center">
         <button 
-          className="text-2xl text-white px-4 py-2 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:scale-125 active:scale-115 bg-[#FF6B6B] rounded-lg shadow disabled:opacity-50"
+          className="text-2xl text-white font-semibold px-4 py-2 scale-135 border-none focus:outline-none transition-transform duration-75 ease-in-out transform hover:cursor-pointer transform hover:opacity-65 transform active:scale-125 bg-[#FF6B6B] transform active:opacity-90 rounded-lg shadow opacity-50"
           onClick={handleTranslate}
           disabled={isLoading || !inputText.trim()}
         >
