@@ -37,12 +37,17 @@ export default function Translate(){
           toLang
         }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
       const data = await response.json();
       setTranslatedText(data.translation);
     } catch (error) {
       console.error('Translation error:', error);
       setTranslatedText('Translation failed. Please try again.');
+      throw error;
     } finally {
       setIsLoading(false);
     }
