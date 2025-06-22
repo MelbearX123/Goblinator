@@ -17,41 +17,41 @@ export default function Translate(){
   };
 
   const handleTranslate = async () => {
-    if (!inputText.trim()) return;
+  if (!inputText.trim()) return;
+  
+  setIsLoading(true);
+  try {
+    const API_URL = process.env.NODE_ENV === 'production' 
+      ? 'https://translator-api.vercel.app'
+      : 'http://localhost:3001';
+
     
-    setIsLoading(true);
-    try {
-      const API_URL = process.env.NODE_ENV === 'production' 
-        ? 'https://translation-api-dusky.vercel.app'
-        : 'http://localhost:3001';
+    const response = await fetch(`${API_URL}/api/translate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: inputText,
+        targetLanguage: toLang,
+        fromLang: fromLang  // Include source language
+      }),
+    });
 
-      
-      const response = await fetch(`${API_URL}/api/translate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: inputText,
-          fromLang,
-          toLang
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setTranslatedText(data.translation);
-    } catch (error) {
-      console.error('Translation error:', error);
-      setTranslatedText('Translation failed. Please try again.');
-      throw error;
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
-  };
+    
+    const data = await response.json();
+    setTranslatedText(data.translatedText);
+  } catch (error) {
+    console.error('Translation error:', error);
+    setTranslatedText(`Translation failed: ${error.message}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return(
     <main className="flex flex-col items-center py-32 bg-[#1e1e1e]">
